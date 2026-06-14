@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: "Anton", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* MangaFinn palette */
+  --ink: #0F1923;
+  --panel: #151F2A;
+  --line: #1E2D3D;
+  --paper: #F8FAFC;
+  --muted: #7A8FA6;
+  --purple: #7C3AED;
+  --purple-light: #A78BFA;
+  --amber: #F59E0B;
+  --pink: #FB7185;
+  --mint: #34D399;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--ink);
+  color: var(--paper);
+}
+
+/* ── Panel grid with purple gutter ── */
+.panel-grid {
+  display: grid;
+  gap: 3px;
+  background-color: var(--line);
+}
+
+.panel-grid > * {
+  background-color: var(--panel);
+}
+
+/* ── Hanko badge — now purple tinted ── */
+.hanko {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--purple);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  transform: rotate(-3deg);
+  border: 2px solid rgba(167, 139, 250, 0.4);
+  letter-spacing: 0.05em;
+}
+
+.hanko.tamat {
+  background-color: var(--mint);
+  color: var(--ink);
+  border-color: rgba(52, 211, 153, 0.4);
+}
+
+.hanko.hiatus {
+  background-color: var(--pink);
+  color: var(--ink);
+  border-color: rgba(251, 113, 133, 0.4);
+}
+
+/* ── Focus ring ── */
+.focus-ring:focus-visible {
+  outline: 2px solid var(--purple-light);
+  outline-offset: 2px;
+}
+
+/* ── Card hover glow ── */
+.card-glow {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.card-glow:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 8px 32px rgba(124, 58, 237, 0.25);
+}
+
+/* ── Purple gradient text ── */
+.gradient-text {
+  background: linear-gradient(135deg, var(--purple-light) 0%, var(--pink) 50%, var(--amber) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Shimmer loading skeleton ── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--line) 25%,
+    rgba(124, 58, 237, 0.1) 50%,
+    var(--line) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--ink); }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--purple); }
+
+/* ── Animate delay utilities ── */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-600 { animation-delay: 0.6s; }
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
