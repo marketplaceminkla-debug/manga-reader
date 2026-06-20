@@ -17,6 +17,8 @@ create table if not exists manga (
   description text,
   author text,
   genres text[],
+  -- Tipe komik berdasarkan asal: manga (Jepang), manhwa (Korea), manhua (China)
+  type text check (type in ('manga', 'manhwa', 'manhua')),
   status text not null default 'ongoing' check (status in ('ongoing', 'completed', 'hiatus')),
   created_at timestamptz not null default now()
 );

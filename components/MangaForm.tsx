@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import type { Manga, MangaStatus } from "@/lib/supabase/types";
+import type { Manga, MangaStatus, MangaType } from "@/lib/supabase/types";
+import { MANGA_TYPES, mangaTypeMeta } from "@/lib/mangaType";
+import CountryFlag from "@/components/CountryFlag";
 
 function slugify(text: string) {
   return text
@@ -23,6 +25,7 @@ export default function MangaForm({ manga }: { manga?: Manga }) {
   const [author, setAuthor] = useState(manga?.author ?? "");
   const [description, setDescription] = useState(manga?.description ?? "");
   const [status, setStatus] = useState<MangaStatus>(manga?.status ?? "ongoing");
+  const [type, setType] = useState<MangaType | "">(manga?.type ?? "");
   const [genres, setGenres] = useState((manga?.genres ?? []).join(", "));
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverUrl, setCoverUrl] = useState(manga?.cover_url ?? "");
@@ -87,6 +90,7 @@ export default function MangaForm({ manga }: { manga?: Manga }) {
       author: author || null,
       description: description || null,
       status,
+      type: type || null,
       genres: genresArray.length > 0 ? genresArray : null,
       cover_url: finalCoverUrl || null,
     };
@@ -166,6 +170,41 @@ export default function MangaForm({ manga }: { manga?: Manga }) {
           placeholder="Action, Drama, Fantasy"
           className="w-full bg-panel border border-line px-4 py-3 text-sm focus-ring"
         />
+      </div>
+
+      <div>
+        <label className="block text-xs font-mono text-muted mb-1">
+          Kategori (asal komik)
+        </label>
+        <div className="flex items-center gap-3">
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value as MangaType | "")}
+            className="flex-1 bg-panel border border-line px-4 py-3 text-sm focus-ring"
+          >
+            <option value="">— Belum ditentukan —</option>
+            {MANGA_TYPES.map((t) => (
+              <option key={t.value} value={t.value}>
+                {t.label} ({t.country})
+              </option>
+            ))}
+          </select>
+          {mangaTypeMeta(type) && (
+            <span
+              className="inline-flex overflow-hidden rounded-[3px] shrink-0"
+              style={{ width: 32, height: 22, boxShadow: "0 1px 3px rgba(0,0,0,0.4)" }}
+            >
+              <CountryFlag
+                code={mangaTypeMeta(type)!.code}
+                title={mangaTypeMeta(type)!.country}
+                className="w-full h-full"
+              />
+            </span>
+          )}
+        </div>
+        <p className="text-[11px] font-mono mt-1" style={{ color: "#7A8FA6" }}>
+          Manga = Jepang 🇯🇵, Manhwa = Korea 🇰🇷, Manhua = China 🇨🇳
+        </p>
       </div>
 
       <div>

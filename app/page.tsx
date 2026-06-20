@@ -3,16 +3,21 @@ import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import type { Manga } from "@/lib/supabase/types";
 import SearchBar from "@/components/SearchBar";
+import MangaTypeBadge from "@/components/MangaTypeBadge";
+import { mangaTypeMeta } from "@/lib/mangaType";
 
 export const revalidate = 0;
 
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: { q?: string };
+  searchParams: { q?: string; type?: string; genre?: string };
 }) {
   const supabase = createClient();
   const q = searchParams.q?.trim() ?? "";
+  const typeFilter = searchParams.type?.trim() ?? "";
+  const genreFilter = searchParams.genre?.trim() ?? "";
+  const typeMeta = mangaTypeMeta(typeFilter);
 
   let query = supabase
     .from("manga")
@@ -22,8 +27,21 @@ export default async function HomePage({
   if (q) {
     query = query.ilike("title", `%${q}%`);
   }
+  if (typeMeta) {
+    query = query.eq("type", typeMeta.value);
+  }
+  if (genreFilter) {
+    query = query.contains("genres", [genreFilter]);
+  }
 
   const { data: manga, error } = await query;
+
+  // Label untuk heading sesuai filter aktif.
+  let heading: string;
+  if (q) heading = `Hasil pencarian "${q}"`;
+  else if (typeMeta) heading = `${typeMeta.label} · ${typeMeta.country}`;
+  else if (genreFilter) heading = `Genre: ${genreFilter}`;
+  else heading = "Semua Koleksi";
 
   const badgeLabel = (status: string) => {
     if (status === "completed") return "TAMAT";
@@ -83,6 +101,10 @@ export default async function HomePage({
           <p className="text-sm font-mono" style={{ color: "#7A8FA6" }}>
             {q
               ? `Tidak ada judul yang cocok dengan "${q}".`
+              : typeMeta
+              ? `Belum ada ${typeMeta.label} (${typeMeta.country}) di koleksi.`
+              : genreFilter
+              ? `Belum ada komik dengan genre "${genreFilter}".`
               : "Belum ada manga. Tambahkan lewat panel admin."}
           </p>
         </div>
@@ -95,7 +117,7 @@ export default async function HomePage({
               className="text-xs font-mono uppercase tracking-widest"
               style={{ color: "#7A8FA6" }}
             >
-              {q ? `Hasil pencarian "${q}"` : "Semua Koleksi"} — {manga.length} judul
+              {heading} — {manga.length} judul
             </h2>
           </div>
 
@@ -134,6 +156,8 @@ export default async function HomePage({
                   <span className={`${badgeClass(m.status)} absolute top-2 left-2 text-[9px] px-2 py-0.5`}>
                     {badgeLabel(m.status)}
                   </span>
+
+                  <MangaTypeBadge type={m.type} variant="flag" className="absolute top-2 right-2" />
                 </div>
 
                 <h2
@@ -142,6 +166,9 @@ export default async function HomePage({
                 >
                   {m.title}
                 </h2>
+                <div className="mt-1">
+                  <MangaTypeBadge type={m.type} variant="chip" />
+                </div>
               </Link>
             ))}
           </div>

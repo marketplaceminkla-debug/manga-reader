@@ -1,5 +1,9 @@
 export type MangaStatus = "ongoing" | "completed" | "hiatus";
 
+// Tipe komik berdasarkan negara asal:
+// manga = Jepang, manhwa = Korea, manhua = China
+export type MangaType = "manga" | "manhwa" | "manhua";
+
 export interface Manga {
   id: string;
   title: string;
@@ -8,6 +12,7 @@ export interface Manga {
   description: string | null;
   author: string | null;
   genres: string[] | null;
+  type: MangaType | null;
   status: MangaStatus;
   created_at: string;
 }

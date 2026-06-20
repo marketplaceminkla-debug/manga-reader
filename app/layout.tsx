@@ -5,6 +5,8 @@ import "./globals.css";
 import NavigationProgress from "@/components/NavigationProgress";
 import LoadingScreen from "@/components/LoadingScreen";
 import MangaFinnLogo from "@/components/MangaFinnLogo";
+import SideMenu from "@/components/SideMenu";
+import { createClient } from "@/lib/supabase/server";
 
 const display = Anton({
   subsets: ["latin"],
@@ -31,11 +33,25 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Kumpulkan daftar genre unik untuk menu samping.
+  let genres: string[] = [];
+  try {
+    const supabase = createClient();
+    const { data } = await supabase.from("manga").select("genres");
+    const set = new Set<string>();
+    data?.forEach((m: { genres: string[] | null }) =>
+      m.genres?.forEach((g) => g && set.add(g))
+    );
+    genres = [...set].sort((a, b) => a.localeCompare(b));
+  } catch {
+    genres = [];
+  }
+
   return (
     <html lang="id" className={`${display.variable} ${body.variable} ${mono.variable}`}>
       <body className="font-body min-h-screen flex flex-col" style={{ background: "#0F1923", color: "#F8FAFC" }}>
@@ -47,12 +63,15 @@ export default function RootLayout({
 
         <header className="border-b sticky top-0 z-50 backdrop-blur-md" style={{ borderColor: "#1E2D3D", background: "rgba(15,25,35,0.85)" }}>
           <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2.5 group focus-ring rounded-lg pr-2">
-              <MangaFinnLogo size={32} className="transition-transform duration-300 group-hover:rotate-3" />
-              <span className="font-display text-xl tracking-wider" style={{ color: "#F8FAFC" }}>
-                MANGA<span style={{ color: "#A78BFA" }}>FINN</span>
-              </span>
-            </Link>
+            <div className="flex items-center gap-2">
+              <SideMenu genres={genres} />
+              <Link href="/" className="flex items-center gap-2.5 group focus-ring rounded-lg pr-2">
+                <MangaFinnLogo size={32} className="transition-transform duration-300 group-hover:rotate-3" />
+                <span className="font-display text-xl tracking-wider" style={{ color: "#F8FAFC" }}>
+                  MANGA<span style={{ color: "#A78BFA" }}>FINN</span>
+                </span>
+              </Link>
+            </div>
             <nav className="flex items-center gap-1 text-sm">
               <Link
                 href="/"

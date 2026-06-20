@@ -3,6 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Chapter, Manga } from "@/lib/supabase/types";
+import MangaTypeBadge from "@/components/MangaTypeBadge";
 
 export const revalidate = 0;
 
@@ -82,9 +83,12 @@ export default async function MangaDetailPage({
         </div>
 
         <div className="flex-1 relative">
-          <span className={`${badgeClass(manga.status)} text-[9px] px-2 py-0.5 mb-3 inline-block`}>
-            {badgeLabel(manga.status)}
-          </span>
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <span className={`${badgeClass(manga.status)} text-[9px] px-2 py-0.5 inline-block`}>
+              {badgeLabel(manga.status)}
+            </span>
+            <MangaTypeBadge type={manga.type} variant="chip" />
+          </div>
 
           <h1 className="font-display text-3xl md:text-4xl tracking-wide mb-2 animate-fade-up delay-100">
             {manga.title}

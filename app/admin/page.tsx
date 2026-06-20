@@ -3,6 +3,7 @@ import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import type { Manga } from "@/lib/supabase/types";
 import DeleteMangaButton from "@/components/DeleteMangaButton";
+import MangaTypeBadge from "@/components/MangaTypeBadge";
 
 export const revalidate = 0;
 
@@ -48,7 +49,10 @@ export default async function AdminDashboard() {
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold truncate">{m.title}</p>
+              <div className="flex items-center gap-2 min-w-0">
+                <p className="text-sm font-semibold truncate">{m.title}</p>
+                <MangaTypeBadge type={m.type} variant="flag" className="shrink-0" />
+              </div>
               <p className="text-xs font-mono truncate" style={{ color: "#7A8FA6" }}>/{m.slug}</p>
             </div>
             <Link
